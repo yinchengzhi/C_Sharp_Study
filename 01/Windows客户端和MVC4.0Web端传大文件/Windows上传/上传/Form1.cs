@@ -47,42 +47,47 @@ namespace 上传
             string PictureStr = BitConverter.ToString(PictureBuffer);
 
 
-            SendPost(PicturePath);
-
+            PostFile(PicturePath);                                                          //传送大文件
+            PostJson(CriminalJson);                                                         //传送JSON
 
         }
 
-        //Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
-        ////byte[] arrB = encode.GetBytes("PictureName=" + PictureName + "&Picture=" + PictureStr + "&CriminalJson=" + CriminalJson);
-        //byte[] arrB = encode.GetBytes("Picture=" + PictureStr);
 
-        //HttpWebRequest myReq = (HttpWebRequest)WebRequest.Create("http://localhost:1246/Upload/Upload");
+        private void PostJson(string CriminalJson)
+        {
+            Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
+            byte[] arrB = encode.GetBytes("CriminalJson=" + CriminalJson);
 
-        //myReq.Method = "POST";
-        //myReq.ContentType = "multipart/form-data";
-        //myReq.ContentLength = arrB.Length;
-        //Stream outStream = myReq.GetRequestStream();
-        //outStream.Write(arrB, 0, arrB.Length);
-        //outStream.Close();
+            HttpWebRequest myReq = (HttpWebRequest)WebRequest.Create("http://localhost:1246/Upload/Upload");
 
-
-        ////接收HTTP做出的响应
-        //WebResponse myResp = myReq.GetResponse();
-        //Stream ReceiveStream = myResp.GetResponseStream();
-        //StreamReader readStream = new StreamReader(ReceiveStream, encode);
-        //Char[] read = new Char[256];
-        //int count = readStream.Read(read, 0, 256);
-        //string str = null;
-        //while (count > 0)
-        //{
-        //    str += new String(read, 0, count);
-        //    count = readStream.Read(read, 0, 256);
-        //}
-        //readStream.Close();
-        //myResp.Close();
+            myReq.Method = "POST";
+            myReq.ContentType = "application/x-www-form-urlencoded";
+            myReq.ContentLength = arrB.Length;
+            Stream outStream = myReq.GetRequestStream();
+            outStream.Write(arrB, 0, arrB.Length);
+            outStream.Close();
 
 
-        private void SendPost(string PicturePath)
+            //接收HTTP做出的响应
+            WebResponse myResp = myReq.GetResponse();
+            Stream ReceiveStream = myResp.GetResponseStream();
+            StreamReader readStream = new StreamReader(ReceiveStream, encode);
+            Char[] read = new Char[256];
+            int count = readStream.Read(read, 0, 256);
+            string str = null;
+            while (count > 0)
+            {
+                str += new String(read, 0, count);
+                count = readStream.Read(read, 0, 256);
+            }
+            readStream.Close();
+            myResp.Close();
+            MessageBox.Show(str);
+            
+        }
+
+
+        private void PostFile(string PicturePath)
         {
             CredentialCache credentialCache = new CredentialCache();
             CookieContainer cookies = new CookieContainer();

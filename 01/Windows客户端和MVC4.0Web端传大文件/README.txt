@@ -12,6 +12,3 @@
 	</system.webServer>
 </configuration>
 
-服务器使用FileReceiver类
-客户端使用FileSender类
-注意参数.

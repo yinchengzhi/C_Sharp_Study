@@ -12,7 +12,7 @@ namespace ASP.Net_MVC4._0_Upload.Controllers
 {
     public class UploadController : Controller
     {
-      
+
         //
         // GET: /Upload/
 
@@ -33,14 +33,36 @@ namespace ASP.Net_MVC4._0_Upload.Controllers
         /// <returns></returns>
         /// 
 
-       // string PicturePath = "";
+        // string PicturePath = "";
 
         [HttpPost]
         public ActionResult Upload(HttpPostedFileBase file)
         {
             if (file == null)
             {
-                return Content("没有文件！", "text/plain");
+                DateTime d = DateTime.Now;
+                string JsonName = d.ToString("yyyy-MM-dd-HH-mm-ss");
+                string CriminalJson = Request.Form["CriminalJson"];
+                if (CriminalJson != null)
+                {
+                    if (!System.IO.File.Exists("D:\\" + JsonName + ".txt"))
+                    {
+                        FileStream fs = new FileStream("D:\\" + JsonName + ".txt", FileMode.Create);
+                        StreamWriter sw = new StreamWriter(fs);
+                        sw.WriteLine(CriminalJson);
+                        sw.Close();
+                        fs.Close();
+                    }
+                    else
+                    {
+                        FileStream fs = new FileStream("D:\\" + JsonName + ".txt", FileMode.Create);
+                        StreamWriter sw = new StreamWriter(fs);
+                        sw.WriteLine(CriminalJson);
+                        sw.Close();
+                        fs.Close();
+                    }
+                }
+                return Content("创建文件成功！", "text/plain");
             }
 
             StringBuilder info = new StringBuilder();
@@ -53,8 +75,8 @@ namespace ASP.Net_MVC4._0_Upload.Controllers
                 postFile.SaveAs(newFilePath + Path.GetFileName(postFile.FileName));
                 info.AppendFormat("Upload File:{0}/r/n", postFile.FileName);            //info 
             }
-            ViewData["Info"] = info;
 
+            ViewData["Info"] = info;
             //return View("Index");
             //return RedirectToAction("Show");
 
