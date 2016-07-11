@@ -29,7 +29,97 @@ namespace SimpleImageProcessing
 
         private void Run_Click(object sender, EventArgs e)
         {
-            //以柔化效果显示图像  
+            Atomization();
+        }
+
+
+        //雾化效果显示图像
+        public void Atomization()
+        {
+            try
+            {
+                int Height = this.pictureBox1.Image.Height;
+                int Width = this.pictureBox1.Image.Width;
+                Bitmap newBitmap = new Bitmap(Width, Height);
+                Bitmap oldBitmap = (Bitmap)this.pictureBox1.Image;
+                Color pixel;
+                for (int x = 1; x < Width - 1; x++)
+                {
+                    for (int y = 1; y < Height - 1; y++)
+                    {
+                        System.Random MyRandom = new Random();
+                        int k = MyRandom.Next(123456);
+
+                        //像素块大小
+                        int dx = x + k % 19;
+                        int dy = y + k % 19;
+
+                        if (dx >= Width)
+                            dx = Width - 1;
+                        if (dy >= Height)
+                            dy = Height - 1;
+
+                        pixel = oldBitmap.GetPixel(dx, dy);
+                        newBitmap.SetPixel(x, y, pixel);
+
+                    }
+                    this.pictureBox1.Image = newBitmap;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "信息错误");
+            }
+        }
+
+        public void Sharpen()
+        {
+            //以锐化效果显示图像  
+            try
+            {
+                int Height = this.pictureBox1.Image.Height;
+                int Width = this.pictureBox1.Image.Width;
+                Bitmap newBitmap = new Bitmap(Width, Height);
+                Bitmap oldBitmap = (Bitmap)this.pictureBox1.Image;
+                Color pixel;
+                //拉普拉斯模板  
+                int[] Laplacian = { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
+                for (int x = 1; x < Width - 1; x++)
+                    for (int y = 1; y < Height - 1; y++)
+                    {
+                        int r = 0, g = 0, b = 0;
+                        int Index = 0;
+                        for (int col = -1; col <= 1; col++)
+                            for (int row = -1; row <= 1; row++)
+                            {
+                                pixel = oldBitmap.GetPixel(x + row, y + col);
+                                r += pixel.R * Laplacian[Index];
+                                g += pixel.G * Laplacian[Index];
+                                b += pixel.B * Laplacian[Index];
+                                Index++;
+                            }
+                        //处理颜色值溢出  
+                        r = r > 255 ? 255 : r;
+                        r = r < 0 ? 0 : r;
+                        g = g > 255 ? 255 : g;
+                        g = g < 0 ? 0 : g;
+                        b = b > 255 ? 255 : b;
+                        b = b < 0 ? 0 : b;
+                        newBitmap.SetPixel(x - 1, y - 1, Color.FromArgb(r, g, b));
+                    }
+                this.pictureBox1.Image = newBitmap;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "信息提示");
+            }
+        }
+
+
+        //以柔化效果显示图像  
+        public void Soften()
+        {
             try
             {
                 int Height = this.pictureBox1.Image.Height;
@@ -72,6 +162,7 @@ namespace SimpleImageProcessing
                 MessageBox.Show(ex.Message, "信息提示");
             }
         }
+
 
 
         //以黑白效果显示图像
@@ -129,7 +220,7 @@ namespace SimpleImageProcessing
 
 
         //以浮雕效果显示图像
-        public void relief()
+        public void Relief()
         {
             try
             {
